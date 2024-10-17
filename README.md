@@ -6,6 +6,7 @@
 
 1. 项目依赖
 2. 初始化项目
+3. 配置Mybatis
 
 ## 1.项目依赖
 JDK 版本: 17.0.12
@@ -272,3 +273,90 @@ public class User {
 //    }  
 }
 ```
+
+## 配置Mybatis
+### 介绍
+MyBatis是一个强大的持久层框架，它内部封装了对JDBC的操作，让开发者只需要关注SQL本身，而不需要处理繁琐的数据库连接、SQL构造、结果集处理等JDBC代码。
+
+> 持久层：指的是就是数据访问层(dao)，是用来操作数据库的。
+
+### 配置流程
+* 配置MyBatis：在Spring Boot项目中，首先需要在application.properties或application.yml文件中配置MyBatis的相关设置，如mapper文件的位置、数据源信息等。
+* 定义实体类：与JPA类似，需要定义实体类（Entity Classes），这些类映射到数据库中的表。MyBatis可以使用注解或XML配置文件来指定映射关系。
+* 创建MyBatis的XML映射文件或使用注解：定义Mapper接口，这些接口的方法对应于数据库操作。每个方法通常对应一个SQL语句。然后，创建XML配置文件或使用注解来编写SQL语句和映射结果。MyBatis还支持动态SQL，可以根据条件灵活构建SQL语句。
+* 事务管理：MyBatis的事务管理可以通过Spring的声明式事务管理来实现。在Spring Boot中，可以使用@Transactional注解来声明事务边界。
+* 异常处理：MyBatis在执行SQL操作时可能会遇到异常，如SQL执行错误、参数错误等。这些异常可以在Service层或Controller层捕获并转换为业务逻辑层可以理解的异常。
+
+### 使用Mybatis对mysql数据库进行增删改查
+
+#### 1.创建数据库
+
+```mysql
+CREATE TABLE student (
+  id INT PRIMARY KEY AUTO_INCREMENT,  -- 学生ID，主键，自动递增
+  name VARCHAR(50) NOT NULL,          -- 学生姓名，不为空
+  gender ENUM('男', '女') NOT NULL,  -- 学生性别，枚举类型，不为空
+  age INT,                            -- 学生年龄
+  class_name VARCHAR(50)            -- 学生所在班级名称
+);
+ 
+INSERT INTO student (name, gender, age, class_name) VALUES ('张三', '男', 18, '高三一班');
+INSERT INTO student (name, gender, age, class_name) VALUES ('李四', '男', 17, '高三二班');
+INSERT INTO student (name, gender, age, class_name) VALUES ('王五', '女', 18, '高三一班');
+INSERT INTO student (name, gender, age, class_name) VALUES ('赵六', '女', 17, '高三二班');
+```
+
+#### 2. 创建 controller, entity,mapper, service, resources/mapping包
+
+#### 3. 编写实体类
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Student {
+    private int id;
+    private String name;
+    private int age;
+    private char gender;
+    private String className;
+}
+```
+
+#### 4. 在 mapper 包创建 StudentMapper.java
+
+```java
+@Mapper
+@Repository
+public interface StudentMapper {
+    @Select("SELECT * FROM student WHERE gender = '女';")
+    public List<Student> findGirl();
+
+    @Select("SELECT * FROM student WHERE id = #{id};")
+    List<Student> findById(int id);//不加public也可，因为interface中的方法都是公用的
+}
+```
+
+@Mapper注解用于标记MyBatis的映射器接口。当Spring Boot项目启动时，它会自动扫描带有@Mapper注解的接口，并创建它们的全局代理实例。
+@Repository注解是Spring框架提供的一个注解，用于标记数据访问层的组件。当Spring容器扫描到带有@Repository注解的接口时，它会自动创建其代理实例，并实现基于接口的依赖注入。
+
+#### 5.StudentMapper.java 单元测试
+```java
+@Autowired
+    public StudentMapper studentMapper;
+
+    @Test
+    void getGirl() {
+        List<Student> students = studentMapper.findGirl();
+        for (Student student : students) {
+            System.out.println(student);
+        }
+    }
+```
+输出结果
+```text
+Student(id=3, name=王五, age=18, gender=女, className=null)
+Student(id=4, name=赵六, age=17, gender=女, className=null)
+```
+
+
+

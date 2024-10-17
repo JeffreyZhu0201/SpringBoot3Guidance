@@ -1,4 +1,4 @@
-package com.example.springboot3guidance.Controller;
+package com.example.springboot3guidance.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
