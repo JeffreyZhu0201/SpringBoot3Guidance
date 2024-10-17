@@ -25,6 +25,8 @@ class SpringBoot3GuidanceApplicationTests {
             System.out.println(student);
         }
     }
+
+
 }
 
 

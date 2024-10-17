@@ -185,9 +185,6 @@ public class TestController {
 
 说明日志配置成功
 
-
-
-
 ### 配置lombok
 #### 介绍
 实体类代码臃肿(getter、setter、toString...)，太繁琐
@@ -274,7 +271,7 @@ public class User {
 }
 ```
 
-## 配置Mybatis
+## Mybatis
 ### 介绍
 MyBatis是一个强大的持久层框架，它内部封装了对JDBC的操作，让开发者只需要关注SQL本身，而不需要处理繁琐的数据库连接、SQL构造、结果集处理等JDBC代码。
 
@@ -379,3 +376,71 @@ Student(id=4, name=赵六, age=17, gender=女, className=null)
             "dept_id, create_time, update_time from emp where id = #{id}")
     List<Student> getById2(Integer id);
 ```
+
+### XML映射文件
+
+#### 配置mybatis映射
+
+```properties
+mybatis.mapper-locations=classpath:mapping/*.xml
+mybatis.type-aliases-package=com.example.springboot3guidance.entity
+```
+#### 在前面注解操作的基础上，去除StudentMapper.java方法上的所有注解
+
+```java
+@Mapper
+@Repository
+public interface StudentMapper {
+    public List<Student> findGirl() ;
+ 
+    public List<Student> findById(int id);
+ 
+    public int insertStudent(Student student);
+ 
+    public int deleteById(int id);
+ 
+    public int updateClassName(int id, String className);
+}
+```
+#### 在mapping包下创建StudentMapper.xml（与StudentMapper.java接口一致）
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--	上面的依赖可以从mybatis中文网复制	-->
+<!-- namespace属性为Mapper接口全限定名一致 -->
+<mapper namespace="com.example.springboot3guidance.mapper.StudentMapper">
+    <!--  id为Mapper接口中对应的方法名，resultType为返回的实体全类名  -->
+    <select id="findGirl" resultType="com.example.springboot3guidance.entity.Student">
+        SELECT * FROM student WHERE gender = '女'
+    </select>
+
+    <select id="findById" resultType="com.example.springboot3guidance.entity.Student">
+        SELECT * FROM student WHERE id = #{id}
+    </select>
+
+    <insert id="insertStudent" parameterType="com.example.springboot3guidance.entity.Student">
+        insert into student(id,name,gender,age,class_name)
+        values (#{id},#{name},#{gender},#{age},#{class_name});
+    </insert>
+
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM student WHERE id = #{id}
+    </delete>
+
+    <update id="updateClassName">
+        UPDATE student SET class_name = #{class_name} WHERE id = #{id};
+    </update>
+
+</mapper>
+```
+
+输出
+
+```text
+Student(id=3, name=王五, age=18, gender=女, className=null)
+Student(id=4, name=赵六, age=17, gender=女, className=null)
+```
+
+
