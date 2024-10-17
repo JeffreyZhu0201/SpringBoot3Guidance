@@ -43,7 +43,7 @@ public class TestController {
 ```properties
 # application.properties
 spring.datasource.name=springboot3guidance
-spring.datasource.url=jdbc:mysql://localhost:3306/springboot3guidance?useUnicode=true&characterEncoding=UTF-8&userSSL=false&serverTimezone=GMT%2B8 
+spring.datasource.url=jdbc:mysql://localhost:3306/springboot3guidance?useUnicode=true&characterEncoding=UTF-8&userSSL=false&serverTimezone=GMT%2B8
 spring.datasource.username=root
 spring.datasource.password=qQ135275033**
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
@@ -59,7 +59,7 @@ spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 ```
 新版数据库
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/springboot3guidance?useUnicode=true&characterEncoding=UTF-8&userSSL=false&serverTimezone=GMT%2B8 
+spring.datasource.url=jdbc:mysql://localhost:3306/springboot3guidance?useUnicode=true&characterEncoding=UTF-8&userSSL=false&serverTimezone=GMT%2B8
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 ```
 
@@ -329,8 +329,8 @@ public class Student {
 @Repository
 public interface StudentMapper {
     @Select("SELECT * FROM student WHERE gender = '女';")
-    public List<Student> findGirl();
-
+    List<Student> findGirl();
+    
     @Select("SELECT * FROM student WHERE id = #{id};")
     List<Student> findById(int id);//不加public也可，因为interface中的方法都是公用的
 }
@@ -364,3 +364,18 @@ Student(id=4, name=赵六, age=17, gender=女, className=null)
 
 
 
+
+
+#### 6. 数据封装
+
+```java
+//转换数据库字段方法 将column字段转换为Entity字段
+    @Results({
+            @Result(column= "dept_id", property = "deptId"),
+            @Result(column= "create_time", property = "createTime"),
+            @Result(column= "update_time", property = "updateTime")
+    })
+    @Select("select id, username, password, name, gender, image, job, entrydate, " +
+            "dept_id, create_time, update_time from emp where id = #{id}")
+    List<Student> getById2(Integer id);
+```
