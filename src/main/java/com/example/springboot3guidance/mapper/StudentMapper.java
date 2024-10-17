@@ -2,8 +2,6 @@ package com.example.springboot3guidance.mapper;
 
 import com.example.springboot3guidance.entity.Student;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 import java.util.List;
